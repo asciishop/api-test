@@ -58,7 +58,7 @@ jwt:
 ### Paso 4 — Ejecutar la aplicación
 
 ```bash
-mvn spring-boot:run
+.\mvnw.cmd spring-boot:run
 ```
 
 Al arrancar verás en los logs:
@@ -82,7 +82,7 @@ La API queda disponible en:
 ### Paso 5 — Ejecutar los tests
 
 ```bash
-mvn test
+.\mvnw.cmd test
 ```
 
 No requieren base de datos. Todos son tests unitarios con mocks.
@@ -270,7 +270,7 @@ jwt:
 ## Ejecutar la aplicación
 
 ```bash
-mvn spring-boot:run
+.\mvnw.cmd spring-boot:run
 ```
 
 La API arranca en **http://localhost:8081**.
@@ -285,7 +285,7 @@ Al iniciar, `DataInitializer` crea automáticamente los 3 usuarios si la tabla `
 ## Ejecutar los tests
 
 ```bash
-mvn test
+.\mvnw.cmd test
 ```
 
 Tests unitarios con **JUnit 5 + Mockito**. No requieren base de datos. Cada caso de uso tiene su propia clase de test.
