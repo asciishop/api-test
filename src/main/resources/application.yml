@@ -1,4 +1,8 @@
 spring:
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    date-format: dd-MM-yyyy
   datasource:
     url: jdbc:postgresql://localhost:5432/imports_db
     username: postgres

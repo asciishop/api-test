@@ -2,6 +2,7 @@ package com.example.importsapi.infrastructure.adapter.in.rest.dto.request;
 
 import com.example.importsapi.domain.model.enums.FreightMode;
 import com.example.importsapi.domain.model.enums.IncotermCode;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -15,8 +16,8 @@ import java.util.List;
 
 public record CreateBookingRequest(
         @NotBlank @Size(max = 100) String bookingCode,
-        @NotNull LocalDate issueDate,
-        @NotNull LocalDate expirationDate,
+        @NotNull @JsonFormat(pattern = "dd-MM-yyyy") LocalDate issueDate,
+        @NotNull @JsonFormat(pattern = "dd-MM-yyyy") LocalDate expirationDate,
         @NotBlank @Size(min = 3, max = 3) String currency,
         @NotNull IncotermCode incotermCode,
         @NotNull FreightMode freightMode,
