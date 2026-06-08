@@ -59,8 +59,8 @@
           "query": [
             { "key": "status",      "value": "DRAFT", "description": "Opcional – DRAFT|CONFIRMED|CANCELLED" },
             { "key": "freightMode", "value": "SEA",   "description": "Opcional – AIR|SEA|ROAD" },
-            { "key": "dateFrom",    "value": "",      "disabled": true, "description": "Opcional – yyyy-MM-dd" },
-            { "key": "dateTo",      "value": "",      "disabled": true, "description": "Opcional – yyyy-MM-dd" },
+            { "key": "dateFrom",    "value": "",      "disabled": true, "description": "Opcional – dd-MM-yyyy" },
+            { "key": "dateTo",      "value": "",      "disabled": true, "description": "Opcional – dd-MM-yyyy" },
             { "key": "bookingCode", "value": "",      "disabled": true, "description": "Opcional – coincidencia exacta" }
           ]
         }
@@ -81,7 +81,7 @@
         },
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"bookingCode\": \"BK-2024-003\",\n  \"issueDate\": \"2024-03-01\",\n  \"expirationDate\": \"2024-09-30\",\n  \"currency\": \"USD\",\n  \"incotermCode\": \"FOB\",\n  \"freightMode\": \"SEA\",\n  \"originCountry\": \"China\",\n  \"destinationCountry\": \"USA\",\n  \"fobValue\": 75000.00,\n  \"items\": [\n    {\n      \"sku\": \"PROD-X01\",\n      \"description\": \"Electronic Component X\",\n      \"quantity\": 500,\n      \"unitPrice\": 150.00\n    }\n  ]\n}"
+          "raw": "{\n  \"bookingCode\": \"BK-2024-003\",\n  \"issueDate\": \"01-03-2024\",\n  \"expirationDate\": \"30-09-2024\",\n  \"currency\": \"USD\",\n  \"incotermCode\": \"FOB\",\n  \"freightMode\": \"SEA\",\n  \"originCountry\": \"China\",\n  \"destinationCountry\": \"USA\",\n  \"fobValue\": 75000.00,\n  \"items\": [\n    {\n      \"sku\": \"PROD-X01\",\n      \"description\": \"Electronic Component X\",\n      \"quantity\": 500,\n      \"unitPrice\": 150.00\n    }\n  ]\n}"
         }
       }
     },
@@ -114,7 +114,7 @@
         },
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"issueDate\": \"2024-04-01\",\n  \"expirationDate\": \"2024-10-31\",\n  \"fobValue\": 55000.00,\n  \"currency\": \"EUR\"\n}"
+          "raw": "{\n  \"issueDate\": \"01-04-2024\",\n  \"expirationDate\": \"31-10-2024\",\n  \"fobValue\": 55000.00,\n  \"currency\": \"EUR\"\n}"
         }
       }
     },
