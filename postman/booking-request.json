@@ -1,0 +1,155 @@
+{
+  "info": {
+    "name": "Imports API – Booking Requests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",  "value": "http://localhost:8081" },
+    { "key": "jwtToken", "value": "", "description": "Se llena automáticamente al ejecutar el request de Login" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{jwtToken}}", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "0. Login (obtener token)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var json = pm.response.json();",
+              "if (json.token) {",
+              "    pm.collectionVariables.set('jwtToken', json.token);",
+              "    console.log('Token guardado correctamente');",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"juan\",\n  \"password\": \"secret123\"\n}"
+        }
+      }
+    },
+    {
+      "name": "1. List bookings (con filtros)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/bookings?status=DRAFT&freightMode=SEA",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bookings"],
+          "query": [
+            { "key": "status",      "value": "DRAFT", "description": "Opcional – DRAFT|CONFIRMED|CANCELLED" },
+            { "key": "freightMode", "value": "SEA",   "description": "Opcional – AIR|SEA|ROAD" },
+            { "key": "dateFrom",    "value": "",      "disabled": true, "description": "Opcional – yyyy-MM-dd" },
+            { "key": "dateTo",      "value": "",      "disabled": true, "description": "Opcional – yyyy-MM-dd" },
+            { "key": "bookingCode", "value": "",      "disabled": true, "description": "Opcional – coincidencia exacta" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2. Create booking",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
+          { "key": "Content-Type",  "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/bookings",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bookings"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"bookingCode\": \"BK-2024-003\",\n  \"issueDate\": \"2024-03-01\",\n  \"expirationDate\": \"2024-09-30\",\n  \"currency\": \"USD\",\n  \"incotermCode\": \"FOB\",\n  \"freightMode\": \"SEA\",\n  \"originCountry\": \"China\",\n  \"destinationCountry\": \"USA\",\n  \"fobValue\": 75000.00,\n  \"items\": [\n    {\n      \"sku\": \"PROD-X01\",\n      \"description\": \"Electronic Component X\",\n      \"quantity\": 500,\n      \"unitPrice\": 150.00\n    }\n  ]\n}"
+        }
+      }
+    },
+    {
+      "name": "3. Get booking by ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/bookings/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bookings", "1"]
+        }
+      }
+    },
+    {
+      "name": "4. Update booking",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
+          { "key": "Content-Type",  "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/bookings/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bookings", "1"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"issueDate\": \"2024-04-01\",\n  \"expirationDate\": \"2024-10-31\",\n  \"fobValue\": 55000.00,\n  \"currency\": \"EUR\"\n}"
+        }
+      }
+    },
+    {
+      "name": "5. Change status",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" },
+          { "key": "Content-Type",  "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/bookings/1/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bookings", "1", "status"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"CONFIRMED\"\n}"
+        }
+      }
+    },
+    {
+      "name": "6. Delete booking (soft delete)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwtToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/bookings/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bookings", "1"]
+        }
+      }
+    }
+  ]
+}

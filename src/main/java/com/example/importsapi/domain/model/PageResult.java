@@ -1,0 +1,11 @@
+package com.example.importsapi.domain.model;
+
+import java.util.List;
+
+public record PageResult<T>(
+        List<T> content,
+        int pageNumber,
+        int pageSize,
+        long totalElements,
+        int totalPages
+) {}

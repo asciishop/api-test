@@ -1,0 +1,111 @@
+# =========================
+# Java / Maven / Gradle
+# =========================
+target/
+build/
+.gradle/
+out/
+
+# Maven Wrapper logs
+.mvn/wrapper/maven-wrapper.jar
+
+# Logs
+*.log
+logs/
+
+# =========================
+# IntelliJ IDEA
+# =========================
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# =========================
+# VS Code
+# =========================
+.vscode/
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.*
+application-local.yml
+application-local.yaml
+application-dev.yml
+application-dev.yaml
+
+# Secrets
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+
+# =========================
+# Claude Code
+# =========================
+.claude/
+.claude-cache/
+.claude_code/
+claude.md
+CLAUDE.md
+
+# Anthropic
+.anthropic/
+
+# AI generated temporary files
+.ai/
+.prompts/
+.context/
+
+# =========================
+# Temporary Files
+# =========================
+tmp/
+temp/
+*.tmp
+*.swp
+*.bak
+
+# =========================
+# Test Reports
+# =========================
+coverage/
+jacoco/
+surefire-reports/
+
+# =========================
+# Node (si tienes frontend)
+# =========================
+node_modules/
+.next/
+dist/
+coverage/
+
+# =========================
+# Docker
+# =========================
+docker-data/
+*.pid
+
+# =========================
+# Local Databases
+# =========================
+*.db
+*.sqlite
+*.sqlite3
+
+# =========================
+# Archives
+# =========================
+*.zip
+*.tar
+*.gz
