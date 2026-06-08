@@ -1,6 +1,8 @@
-package com.example.importsapi.application.service;
+package com.example.importsapi.application.usecase;
 
+import com.example.importsapi.application.service.BookingService;
 import com.example.importsapi.domain.exception.BookingNotFoundException;
+import com.example.importsapi.domain.exception.InvalidStatusTransitionException;
 import com.example.importsapi.domain.model.BookingItem;
 import com.example.importsapi.domain.model.BookingRequest;
 import com.example.importsapi.domain.model.Supplier;
@@ -25,11 +27,12 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("GetBookingUseCase")
-class GetBookingUseCaseTest {
+@DisplayName("ChangeBookingStatusUseCase")
+class ChangeBookingStatusUseCaseTest {
 
     private static final String OWNER_TAX_ID = "12-3456789-0";
     private static final String OTHER_TAX_ID  = "99-9999999-9";
@@ -39,6 +42,8 @@ class GetBookingUseCaseTest {
     @InjectMocks private BookingService bookingService;
 
     private BookingRequest draftBooking;
+    private BookingRequest confirmedBooking;
+    private BookingRequest cancelledBooking;
 
     @BeforeEach
     void setUp() {
@@ -62,35 +67,70 @@ class GetBookingUseCaseTest {
                         .totalAmount(new BigDecimal("1000.00"))
                         .build()))
                 .build();
+
+        confirmedBooking = draftBooking.toBuilder().status(BookingStatus.CONFIRMED).build();
+        cancelledBooking = draftBooking.toBuilder().status(BookingStatus.CANCELLED).build();
     }
 
     @Test
-    @DisplayName("retorna la reserva cuando existe y pertenece al caller")
-    void getBooking_success() {
+    @DisplayName("DRAFT → CONFIRMED y registra updatedAt")
+    void draftToConfirmed() {
         when(bookingRepository.findActiveById(1L)).thenReturn(Optional.of(draftBooking));
+        when(bookingRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-        BookingRequest result = bookingService.getBooking(1L, OWNER_TAX_ID);
+        BookingRequest result = bookingService.changeStatus(1L, BookingStatus.CONFIRMED, OWNER_TAX_ID);
 
-        assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getBookingCode()).isEqualTo("BK-001");
-        assertThat(result.getSupplier().getTaxId()).isEqualTo(OWNER_TAX_ID);
+        assertThat(result.getStatus()).isEqualTo(BookingStatus.CONFIRMED);
+        assertThat(result.getUpdatedAt()).isNotNull();
     }
 
     @Test
-    @DisplayName("lanza excepción cuando la reserva no existe")
-    void getBooking_notFound() {
-        when(bookingRepository.findActiveById(99L)).thenReturn(Optional.empty());
+    @DisplayName("DRAFT → CANCELLED")
+    void draftToCancelled() {
+        when(bookingRepository.findActiveById(1L)).thenReturn(Optional.of(draftBooking));
+        when(bookingRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-        assertThatThrownBy(() -> bookingService.getBooking(99L, OWNER_TAX_ID))
-                .isInstanceOf(BookingNotFoundException.class);
+        BookingRequest result = bookingService.changeStatus(1L, BookingStatus.CANCELLED, OWNER_TAX_ID);
+
+        assertThat(result.getStatus()).isEqualTo(BookingStatus.CANCELLED);
+    }
+
+    @Test
+    @DisplayName("CONFIRMED → CANCELLED")
+    void confirmedToCancelled() {
+        when(bookingRepository.findActiveById(1L)).thenReturn(Optional.of(confirmedBooking));
+        when(bookingRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        BookingRequest result = bookingService.changeStatus(1L, BookingStatus.CANCELLED, OWNER_TAX_ID);
+
+        assertThat(result.getStatus()).isEqualTo(BookingStatus.CANCELLED);
+    }
+
+    @Test
+    @DisplayName("CANCELLED es un estado terminal — lanza excepción en cualquier transición")
+    void cancelledIsTerminal() {
+        when(bookingRepository.findActiveById(1L)).thenReturn(Optional.of(cancelledBooking));
+
+        assertThatThrownBy(() -> bookingService.changeStatus(1L, BookingStatus.CONFIRMED, OWNER_TAX_ID))
+                .isInstanceOf(InvalidStatusTransitionException.class)
+                .hasMessageContaining("CANCELLED");
+    }
+
+    @Test
+    @DisplayName("CONFIRMED → DRAFT es inválido")
+    void confirmedToDraftInvalid() {
+        when(bookingRepository.findActiveById(1L)).thenReturn(Optional.of(confirmedBooking));
+
+        assertThatThrownBy(() -> bookingService.changeStatus(1L, BookingStatus.DRAFT, OWNER_TAX_ID))
+                .isInstanceOf(InvalidStatusTransitionException.class);
     }
 
     @Test
     @DisplayName("lanza excepción cuando la reserva pertenece a otro proveedor")
-    void getBooking_ownershipViolation() {
+    void changeStatus_ownershipViolation() {
         when(bookingRepository.findActiveById(1L)).thenReturn(Optional.of(draftBooking));
 
-        assertThatThrownBy(() -> bookingService.getBooking(1L, OTHER_TAX_ID))
+        assertThatThrownBy(() -> bookingService.changeStatus(1L, BookingStatus.CONFIRMED, OTHER_TAX_ID))
                 .isInstanceOf(BookingNotFoundException.class);
     }
 }

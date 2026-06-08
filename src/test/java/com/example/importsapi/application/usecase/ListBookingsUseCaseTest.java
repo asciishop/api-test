@@ -1,5 +1,6 @@
-package com.example.importsapi.application.service;
+package com.example.importsapi.application.usecase;
 
+import com.example.importsapi.application.service.BookingService;
 import com.example.importsapi.domain.model.BookingItem;
 import com.example.importsapi.domain.model.BookingRequest;
 import com.example.importsapi.domain.model.PageResult;

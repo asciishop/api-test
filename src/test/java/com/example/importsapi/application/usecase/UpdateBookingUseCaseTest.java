@@ -1,5 +1,6 @@
-package com.example.importsapi.application.service;
+package com.example.importsapi.application.usecase;
 
+import com.example.importsapi.application.service.BookingService;
 import com.example.importsapi.domain.exception.BookingNotFoundException;
 import com.example.importsapi.domain.exception.InvalidBookingStateException;
 import com.example.importsapi.domain.model.BookingItem;

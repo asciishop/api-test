@@ -1,5 +1,6 @@
-package com.example.importsapi.application.service;
+package com.example.importsapi.application.usecase;
 
+import com.example.importsapi.application.service.AuthService;
 import com.example.importsapi.domain.exception.InvalidCredentialsException;
 import com.example.importsapi.domain.model.User;
 import com.example.importsapi.domain.port.in.command.LoginCommand;
