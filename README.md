@@ -4,6 +4,149 @@ REST API construida con **Java 17 + Spring Boot 3.3** para gestionar solicitudes
 
 ---
 
+## Como iniciar la aplicación
+
+### Paso 1 — Requisitos previos
+
+Verifica que tienes instalado:
+
+| Herramienta | Versión mínima | Verificar con |
+|---|---|---|
+| Java | 17 | `java -version` |
+| Maven | 3.9 | `mvn -version` |
+| PostgreSQL | 15 | `psql --version` |
+
+---
+
+### Paso 2 — Base de datos
+
+Conéctate a PostgreSQL como superusuario y ejecuta:
+
+```sql
+-- 1. Crear la base de datos
+CREATE DATABASE imports_db;
+```
+
+```bash
+# 2. Crear las tablas e insertar datos de prueba
+psql -U postgres -d imports_db -f sql/schema.sql
+```
+
+Esto crea las tablas `suppliers`, `booking_requests`, `booking_items` y `users`.
+
+
+---
+
+### Paso 3 — Configuración
+
+Abre `src/main/resources/application.yml` y verifica:
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/imports_db
+    username: postgres   
+    password: postgres   
+
+jwt:
+  secret: "8f3a7c91d5e2b6f0a4c8d1e7f9b2a6c3d8e4f1a7b9c5d2e6f3a8c1b7d4e9f2a5"
+  expiration-ms: 3600000  # 1 hora
+```
+
+---
+
+### Paso 4 — Ejecutar la aplicación
+
+```bash
+mvn spring-boot:run
+```
+
+Al arrancar verás en los logs:
+
+```
+Started ImportsApiApplication in X seconds
+```
+
+La API queda disponible en:
+
+| Recurso | URL |
+|---|---|
+| API base | http://localhost:8081 |
+| Swagger UI | http://localhost:8081/swagger-ui.html |
+| OpenAPI JSON | http://localhost:8081/v3/api-docs |
+
+> En el primer arranque, `DataInitializer` crea automáticamente los 3 usuarios de prueba en la tabla `users`.
+
+---
+
+### Paso 5 — Ejecutar los tests
+
+```bash
+mvn test
+```
+
+No requieren base de datos. Todos son tests unitarios con mocks.
+
+---
+
+### Paso 6 — Flujo en Postman
+
+**1. Importar la colección**
+
+```
+Postman → Import → seleccionar postman/booking-request.json
+```
+
+**2. Obtener el token (una sola vez)**
+
+Ejecuta el request **"0. Login (obtener token)"**:
+
+```
+POST http://localhost:8081/auth/login
+{
+  "username": "juan",
+  "password": "secret123"
+}
+```
+
+El script del request guarda el token automáticamente en la variable `{{jwtToken}}`. No necesitas copiar nada manualmente.
+
+**3. Llamar a cualquier endpoint**
+
+A partir de este momento todos los demás requests ya incluyen el header:
+
+```
+Authorization: Bearer {{jwtToken}}
+```
+
+Simplemente selecciona el request que quieras y presiona **Send**.
+
+**4. Flujo de ejemplo — crear y confirmar una reserva**
+
+```
+① POST /auth/login          → obtener token
+② POST /api/bookings        → crear reserva (estado: DRAFT)
+③ GET  /api/bookings/{id}   → verificar datos
+④ PATCH /api/bookings/{id}/status  { "status": "CONFIRMED" }
+⑤ GET  /api/bookings        → listar todas las reservas del proveedor
+```
+
+**5. Cambiar de proveedor**
+
+Edita el body del request de login con otro usuario:
+
+| username | password | Proveedor |
+|---|---|---|
+| `juan` | `secret123` | Acme Corp |
+| `maria` | `secret123` | Global Imports Ltd |
+| `diego` | `secret123` | EuroSupply GmbH |
+
+**6. Token expirado**
+
+El token dura **1 hora**. Si recibes `401 Token inválido o expirado`, vuelve a ejecutar **"0. Login"** para obtener uno nuevo.
+
+---
+
 ## Arquitectura
 
 ### Hexagonal (Ports & Adapters)
@@ -47,7 +190,7 @@ Las dependencias siempre apuntan **hacia adentro** — el dominio no conoce Spri
 ## Estructura del proyecto
 
 ```
-v2/
+
 ├── src/
 │   ├── main/java/com/example/importsapi/
 │   │   ├── domain/
